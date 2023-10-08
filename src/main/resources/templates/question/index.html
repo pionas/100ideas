@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="template :: head(title = '100 ideas')" />
+<body>
+<th:block th:replace="template :: header" />
+
+<main class="container">
+    <div class="row g-5">
+        <div class="col-md-8">
+            <article class="blog-post">
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="question : ${questionsPage.content}">
+                        <td><a th:text="${question.name}" th:href="@{'/questions/'+${question.id}}"></a></td>
+                    </tr>
+                    </tbody>
+                </table>
+
+            </article>
+
+
+            <nav th:if="${questionsPage.totalPages > 0}" class="blog-pagination" aria-label="Pagination">
+                <a class="btn btn-outline-primary" th:each="pageNumber : ${pageNumbers}"
+                   th:href="@{''(size=${questionsPage.size}, page=${pageNumber})}"
+                   th:text=${pageNumber}
+                   th:class="${pageNumber==questionsPage.number + 1} ? 'btn btn-outline-primary disabled' : 'btn btn-outline-primary'"></a>
+            </nav>
+
+        </div>
+
+        <th:block th:replace="template :: sidebar" />
+    </div>
+
+</main>
+
+<th:block th:replace="template :: footer" />
+</body>
+</html>

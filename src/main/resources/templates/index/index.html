@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="template :: head(title = '100 ideas')" />
+    <body>
+        <th:block th:replace="template :: header" />
+
+        <main class="container">
+
+            <div class="row mb-2">
+                <div class="col-md-6" th:each="question : ${questionsTop}">
+                    <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                        <div class="col p-4 d-flex flex-column position-static">
+                            <strong class="d-inline-block mb-2 text-primary" th:text="${question.categoryName}">Category name</strong>
+                            <h3 class="mb-0" th:text="${question.name}">Question name</h3>
+                            <div class="mb-1 text-muted" th:text="${question.created}"></div>
+                            <a th:href="@{'/questions/'+${question.id}}" class="stretched-link">Continue reading</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row g-5">
+                <div class="col-md-8">
+                    <article class="blog-post" th:each="category : ${categories}">
+                        <h2 class="blog-post-title">
+                            <a th:href="@{'/categories/' + ${category.id}}" th:text="${category.name}"></a>
+                        </h2>
+                        <p class="blog-post-meta" th:text="'Pytań: '+${category.questions}+', odpowiedzi: '+${category.answers}"></p>
+                        <table class="table" th:if="${category.questions>0}">
+                            <thead>
+                            <tr>
+                                <th>Pytanie</th>
+                                <th>Odpowiedzi</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="question : ${@indexViewController.topQuestionsByCategory(category.id)}">
+                                <td><a th:href="@{'/questions/'+${question.id}}" th:text="${question.name}"></a></td>
+                                <td th:text="${question.answers}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </article>
+
+                </div>
+
+                <th:block th:replace="template :: sidebar" />
+            </div>
+
+        </main>
+
+        <th:block th:replace="template :: footer" />
+    </body>
+</html>
