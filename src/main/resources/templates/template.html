@@ -79,7 +79,7 @@
         </div>
 
         <div class="p-4">
-            <h4 class="fst-italic">Losowe pytania</h4>
+            <h4 class="fst-italic" th:text="#{menu.random_questions}">Random questions</h4>
             <ol class="list-unstyled mb-0">
                 <li th:each="question : ${@indexViewController.randomQuestions()}"><a th:href="@{'/questions/' + ${question.id}}" th:text="${question.name}"></a></li>
             </ol>
