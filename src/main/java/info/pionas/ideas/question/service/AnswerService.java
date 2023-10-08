@@ -29,7 +29,7 @@ public class AnswerService {
 
     @Transactional(readOnly = true)
     public Answer getAnswer(UUID id) {
-        return answerRepository.getById(id);
+        return answerRepository.getReferenceById(id);
     }
 
     @Transactional
@@ -38,7 +38,7 @@ public class AnswerService {
 
         answer.setName(answerRequest.getName());
 
-        Question question = questionRepository.getById(questionId);
+        Question question = questionRepository.getReferenceById(questionId);
         question.addAnswer(answer);
 
         answerRepository.save(answer);
@@ -49,7 +49,7 @@ public class AnswerService {
 
     @Transactional
     public Answer updateAnswer(UUID answerId, Answer answerRequest) {
-        Answer answer = answerRepository.getById(answerId);
+        Answer answer = answerRepository.getReferenceById(answerId);
         answer.setName(answerRequest.getName());
 
         return answerRepository.save(answer);

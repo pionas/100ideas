@@ -86,7 +86,7 @@ class QuestionServiceIT {
 
         // then
         assertThat(result.getName()).isEqualTo(question.getName());
-        assertThat(result.getName()).isEqualTo(questionRepository.getById(result.getId()).getName());
+        assertThat(result.getName()).isEqualTo(questionRepository.getReferenceById(result.getId()).getName());
     }
 
     @Test
@@ -102,7 +102,7 @@ class QuestionServiceIT {
 
         // then
         assertThat(result.getId()).isEqualTo(question.getId());
-        assertThat(result.getId()).isEqualTo(questionRepository.getById(question.getId()).getId());
+        assertThat(result.getId()).isEqualTo(questionRepository.getReferenceById(question.getId()).getId());
     }
 
     @Test
