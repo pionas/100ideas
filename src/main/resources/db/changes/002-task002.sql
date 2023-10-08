@@ -1,14 +1,14 @@
 --liquibase formatted sql
 
 --changeset StormIT:002_1
-insert into questions (id, name, category_id)
+insert into questions (id, name, category_id, created)
 values (random_uuid(), 'Dlaczego warto uczyć się programowania',
-        (select id from categories where name = 'Edukacja')),
+        (select id from categories where name = 'Edukacja'), now()),
        (random_uuid(), 'Dlaczego Java jest dobrym językiem na start',
-        (select id from categories where name = 'Edukacja'));
+        (select id from categories where name = 'Edukacja'), now());
 
-insert into questions (id, name, category_id)
-values (random_uuid(), 'Jakie są najzdrowsze warzywa?', (select id from categories where name = 'Zdrowie'));
+insert into questions (id, name, category_id, created)
+values (random_uuid(), 'Jakie są najzdrowsze warzywa?', (select id from categories where name = 'Zdrowie'), now());
 
 insert into answers (id, name, question_id)
 values (random_uuid(), 'Marchewka', (select id from questions where name = 'Jakie są najzdrowsze warzywa?')),

@@ -64,8 +64,8 @@ values (random_uuid(), 'Zdrowie'),
        (random_uuid(), 'Związki'),
        (random_uuid(), 'Inne');
 
-insert into questions (id, name, category_id)
+insert into questions (id, name, category_id, created)
 values (random_uuid(), 'Gdzie najlepiej spędzić wakacje z Polsce',
-        (select id from categories where name = 'Turystyka')),
+        (select id from categories where name = 'Turystyka'), now()),
        (random_uuid(), 'Gdzie najlepiej spędzić wakacje z Europie',
-        (select id from categories where name = 'Turystyka'));
+        (select id from categories where name = 'Turystyka'), now());

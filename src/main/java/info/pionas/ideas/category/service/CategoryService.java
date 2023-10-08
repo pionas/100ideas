@@ -36,7 +36,7 @@ public class CategoryService {
 
     @Transactional(readOnly = true)
     public Category getCategory(UUID id) {
-        return categoryRepository.getById(id);
+        return categoryRepository.getReferenceById(id);
     }
 
     @Transactional
@@ -50,7 +50,7 @@ public class CategoryService {
 
     @Transactional
     public Category updateCategory(UUID id, Category categoryRequest) {
-        Category category = categoryRepository.getById(id);
+        Category category = categoryRepository.getReferenceById(id);
 
         category.setName(categoryRequest.getName());
 

@@ -30,7 +30,7 @@ public class QuestionService {
 
     @Transactional(readOnly = true)
     public Question getQuestion(UUID id) {
-        return questionRepository.getById(id);
+        return questionRepository.getReferenceById(id);
     }
 
     @Transactional
@@ -44,7 +44,7 @@ public class QuestionService {
 
     @Transactional
     public Question updateQuestion(UUID id, Question questionRequest) {
-        Question question = questionRepository.getById(id);
+        Question question = questionRepository.getReferenceById(id);
 
         question.setName(questionRequest.getName());
 
