@@ -27,10 +27,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'corretto'
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - name: Test with Gradle
-        run: ./gradlew test
+      - name: Test with Maven
+        run: mvn clean test
 
   generate-jar:
     if: ${{ github.event_name == 'push' }}
