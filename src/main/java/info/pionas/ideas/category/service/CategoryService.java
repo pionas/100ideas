@@ -3,6 +3,7 @@ package info.pionas.ideas.category.service;
 import info.pionas.ideas.category.domain.model.Category;
 import info.pionas.ideas.category.domain.repository.CategoryRepository;
 import info.pionas.ideas.category.dto.CategoryWithStatisticsDto;
+import info.pionas.ideas.category.exception.CategoryNotFoundException;
 import info.pionas.ideas.common.uuid.UuidUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -45,17 +47,18 @@ public class CategoryService {
         Category category = new Category();
         category.setId(uuidUtils.generate());
         category.setName(categoryRequest.getName());
-
+        category.setQuestions(categoryRequest.getQuestions());
         return categoryRepository.save(category);
     }
 
     @Transactional
     public Category updateCategory(UUID id, Category categoryRequest) {
-        Category category = categoryRepository.getReferenceById(id);
-
-        category.setName(categoryRequest.getName());
-
-        return categoryRepository.save(category);
+        return Optional.ofNullable(categoryRepository.getReferenceById(id))
+                .map(categoryDetails -> {
+                    categoryDetails.setName(categoryRequest.getName());
+                    return categoryDetails;
+                }).map(categoryRepository::save)
+                .orElseThrow(() -> new CategoryNotFoundException(id));
     }
 
     @Transactional
