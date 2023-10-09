@@ -95,7 +95,7 @@ class CategoryServiceTest {
         UUID uuid = UUID.randomUUID();
         Category category = new Category();
         category.setId(uuid);
-        category.setQuestions(List.of(new Question("Question 1")));
+        category.setQuestions(List.of(new Question(UUID.randomUUID(), "Question 1")));
         when(categoryRepository.getReferenceById(uuid)).thenReturn(category);
         //when
         Category categoryExpect = categoryService.getCategory(uuid);
@@ -112,7 +112,7 @@ class CategoryServiceTest {
         UUID uuid = UUID.randomUUID();
         Category category = new Category();
         category.setName("Category 1");
-        category.setQuestions(List.of(new Question("Question 1")));
+        category.setQuestions(List.of(new Question(UUID.randomUUID(), "Question 1")));
         when(uuidUtils.generate()).thenReturn(uuid);
         when(categoryRepository.save(any())).thenAnswer(
                 (InvocationOnMock invocationOnMock) -> invocationOnMock.getArguments()[0]);
@@ -132,7 +132,7 @@ class CategoryServiceTest {
         Category currentCategory = new Category();
         currentCategory.setId(uuid);
         currentCategory.setName("Category 1");
-        currentCategory.setQuestions(List.of(new Question("Question 1")));
+        currentCategory.setQuestions(List.of(new Question(UUID.randomUUID(), "Question 1")));
         Category categoryToUpdate = new Category();
         categoryToUpdate.setName("New Category Name");
         when(categoryRepository.getReferenceById(uuid)).thenReturn(currentCategory);
@@ -152,7 +152,7 @@ class CategoryServiceTest {
         //given
         UUID uuid = UUID.randomUUID();
         Category category = new Category();
-        category.setQuestions(List.of(new Question("Question 1")));
+        category.setQuestions(List.of(new Question(UUID.randomUUID(), "Question 1")));
         when(categoryRepository.getReferenceById(uuid)).thenReturn(null);
         when(categoryRepository.save(any())).thenAnswer(
                 (InvocationOnMock invocationOnMock) -> invocationOnMock.getArguments()[0]);

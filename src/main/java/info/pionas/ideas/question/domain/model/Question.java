@@ -3,6 +3,7 @@ package info.pionas.ideas.question.domain.model;
 import info.pionas.ideas.category.domain.model.Category;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -16,6 +17,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class Question {
 
     @Id
@@ -33,12 +35,8 @@ public class Question {
 
     private LocalDateTime modified;
 
-    public Question() {
-        this.id = UUID.randomUUID();
-    }
-
-    public Question(String name) {
-        this();
+    public Question(UUID id, String name) {
+        this.id = id;
         this.name = name;
     }
 

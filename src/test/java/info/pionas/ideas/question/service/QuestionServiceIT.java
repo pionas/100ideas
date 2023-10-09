@@ -43,9 +43,9 @@ class QuestionServiceIT {
         questionRepository.deleteAll();
 
         questionRepository.saveAll(List.of(
-                new Question("Question1"),
-                new Question("Question2"),
-                new Question("Question3")
+                new Question(UUID.randomUUID(), "Question1"),
+                new Question(UUID.randomUUID(), "Question2"),
+                new Question(UUID.randomUUID(), "Question3")
         ));
 
         // when
@@ -61,12 +61,12 @@ class QuestionServiceIT {
     @Test
     void shouldSingleGetQuestion() {
         // given
-        Question question = new Question("Question2");
+        Question question = new Question(UUID.randomUUID(), "Question2");
 
         questionRepository.saveAll(List.of(
-                new Question("Question1"),
+                new Question(UUID.randomUUID(), "Question1"),
                 question,
-                new Question("Question3")
+                new Question(UUID.randomUUID(), "Question3")
         ));
 
         // when
@@ -79,7 +79,7 @@ class QuestionServiceIT {
     @Test
     void shouldCreateQuestion() {
         // given
-        Question question = new Question("Question");
+        Question question = new Question(UUID.randomUUID(), "Question");
 
         // when
         Question result = questionService.createQuestion(question);
@@ -92,7 +92,7 @@ class QuestionServiceIT {
     @Test
     void shouldUpdateQuestion() {
         // given
-        Question question = new Question("Question");
+        Question question = new Question(UUID.randomUUID(), "Question");
         question = questionService.createQuestion(question);
 
         question.setName("updated");
@@ -108,7 +108,7 @@ class QuestionServiceIT {
     @Test
     void shouldDeleteQuestion() {
         // given
-        Question question = new Question("Question");
+        Question question = new Question(UUID.randomUUID(), "Question");
         question = questionService.createQuestion(question);
         UUID id = question.getId();
 
@@ -126,13 +126,13 @@ class QuestionServiceIT {
         Category category = new Category(UUID.fromString("cbb9f3e8-22bf-4e80-8ada-3cef67911ad4"), "Category1");
         categoryRepository.save(category);
 
-        Question question1 = new Question("Question1");
+        Question question1 = new Question(UUID.randomUUID(), "Question1");
         question1.setCategory(category);
 
-        Question question2 = new Question("Question2");
+        Question question2 = new Question(UUID.randomUUID(), "Question2");
         question2.setCategory(category);
 
-        Question question3 = new Question("Question3");
+        Question question3 = new Question(UUID.randomUUID(), "Question3");
         questionRepository.saveAll(List.of(question1, question2, question3));
 
         // when
@@ -150,13 +150,13 @@ class QuestionServiceIT {
         // given
         questionRepository.deleteAll();
 
-        Question question1 = new Question("Question1");
-        Question question2 = new Question("Question2");
-        Question question3 = new Question("Question3");
+        Question question1 = new Question(UUID.randomUUID(), "Question1");
+        Question question2 = new Question(UUID.randomUUID(), "Question2");
+        Question question3 = new Question(UUID.randomUUID(), "Question3");
 
         questionRepository.saveAll(List.of(question1, question2, question3));
 
-        Answer answer = new Answer("Answer");
+        Answer answer = new Answer(UUID.randomUUID(), "Answer");
         question2.addAnswer(answer);
         answerRepository.save(answer);
 
@@ -175,13 +175,13 @@ class QuestionServiceIT {
         // given
         questionRepository.deleteAll();
 
-        Question question1 = new Question("Question1");
-        Question question2 = new Question("Question2");
-        Question question3 = new Question("Question3");
+        Question question1 = new Question(UUID.randomUUID(), "Question1");
+        Question question2 = new Question(UUID.randomUUID(), "Question2");
+        Question question3 = new Question(UUID.randomUUID(), "Question3");
 
         questionRepository.saveAll(List.of(question1, question2, question3));
 
-        Answer answer = new Answer("Answer");
+        Answer answer = new Answer(UUID.randomUUID(), "Answer");
         question2.addAnswer(answer);
         answerRepository.save(answer);
 
@@ -200,9 +200,9 @@ class QuestionServiceIT {
         // given
         String query = "abc";
 
-        Question question1 = new Question("Question1");
-        Question question2 = new Question("Question2-" + query);
-        Question question3 = new Question("Question3");
+        Question question1 = new Question(UUID.randomUUID(), "Question1");
+        Question question2 = new Question(UUID.randomUUID(), "Question2-" + query);
+        Question question3 = new Question(UUID.randomUUID(), "Question3");
 
         questionRepository.saveAll(List.of(question1, question2, question3));
 

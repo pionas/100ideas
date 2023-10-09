@@ -6,6 +6,8 @@ import info.pionas.ideas.category.dto.CategoryDto;
 import info.pionas.ideas.category.dto.CategoryPage;
 import info.pionas.ideas.category.dto.CreateCategory;
 import info.pionas.ideas.category.service.CategoryService;
+import info.pionas.ideas.question.domain.model.Answer;
+import info.pionas.ideas.question.domain.model.Question;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -19,6 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -31,6 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class CategoryApiControllerTest {
 
+    private static final UUID CATEGORY_UUID = UUID.fromString("cbb9f3e8-22bf-4e80-8ada-3cef67911ad4");
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -41,22 +46,20 @@ class CategoryApiControllerTest {
     private ObjectMapper objectMapper;
 
     private PageImpl<Category> page;
-    private Category category;
 
     @BeforeEach
     void setUp() {
-        category = new Category(UUID.fromString("cbb9f3e8-22bf-4e80-8ada-3cef67911ad4"), "Cat1");
+        Category category1 = prepareCategoryWithQuestionAndAnswer();
         Category category2 = new Category(UUID.fromString("f675468d-8cf9-48d6-8a15-27efa1359407"), "Cat2");
         Category category3 = new Category(UUID.fromString("ed3335df-5754-4038-a026-d39ce0cf2ebd"), "Cat3");
         page = new PageImpl<>(
-                List.of(category, category2, category3)
+                List.of(category1, category2, category3)
         );
         when(categoryService.getCategories(any())).thenReturn(page);
-        when(categoryService.getCategory(category.getId())).thenReturn(category);
+        when(categoryService.getCategory(any())).thenReturn(category1);
 
-        when(categoryService.createCategory(any())).thenAnswer(invocation -> category);
-        when(categoryService.updateCategory(any(), any())).thenAnswer(
-                (InvocationOnMock invocationOnMock) -> invocationOnMock.getArguments()[1]);
+        when(categoryService.createCategory(any())).thenAnswer(invocation -> category1);
+        when(categoryService.updateCategory(any(), any())).thenAnswer((InvocationOnMock invocationOnMock) -> category1);
     }
 
     @Test
@@ -77,22 +80,23 @@ class CategoryApiControllerTest {
 
     @Test
     void shouldGetCategory() throws Exception {
-        mockMvc.perform(get("http://localhost:8080/api/v1/categories/{categoryId}", category.getId()))
+        mockMvc.perform(get("http://localhost:8080/api/v1/categories/{categoryId}", CATEGORY_UUID))
                 .andExpect(status().isOk())
                 .andExpect(
-                        content().json(objectMapper.writeValueAsString(category))
+                        content().json("{\"id\":\"cbb9f3e8-22bf-4e80-8ada-3cef67911ad4\",\"name\":\"Cat1\",\"questions\":[{\"id\":\"a07208ec-69c1-42dc-ab62-ba0aaf85c516\",\"name\":\"Question 1\",\"answers\":[{\"id\":\"16541f93-8ede-476b-9ce5-730a22c103ea\",\"name\":\"Answer 1\"}]}]}")
                 );
     }
 
     @Test
     void shouldCreateCategory() throws Exception {
+        Category categoryToCreate = new Category(CATEGORY_UUID, "new category name");
         mockMvc.perform(post("http://localhost:8080/api/v1/categories")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(category))
+                        .content(objectMapper.writeValueAsString(categoryToCreate))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(
-                        content().json(objectMapper.writeValueAsString(category))
+                        content().json("{\"id\":\"cbb9f3e8-22bf-4e80-8ada-3cef67911ad4\",\"name\":\"Cat1\",\"questions\":[{\"id\":\"a07208ec-69c1-42dc-ab62-ba0aaf85c516\",\"name\":\"Question 1\",\"answers\":[{\"id\":\"16541f93-8ede-476b-9ce5-730a22c103ea\",\"name\":\"Answer 1\"}]}]}")
                 );
     }
 
@@ -124,19 +128,20 @@ class CategoryApiControllerTest {
 
     @Test
     void shouldUpdateCategory() throws Exception {
-        mockMvc.perform(put("http://localhost:8080/api/v1/categories/{categoryId}", category.getId())
+        Category categoryToUpdate = new Category(CATEGORY_UUID, "new category name");
+        mockMvc.perform(put("http://localhost:8080/api/v1/categories/{categoryId}", CATEGORY_UUID)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(category))
+                        .content(objectMapper.writeValueAsString(categoryToUpdate))
                 )
                 .andExpect(status().isAccepted())
                 .andExpect(
-                        content().json(objectMapper.writeValueAsString(category))
+                        content().json("{\"id\":\"cbb9f3e8-22bf-4e80-8ada-3cef67911ad4\",\"name\":\"Cat1\",\"questions\":[{\"id\":\"a07208ec-69c1-42dc-ab62-ba0aaf85c516\",\"name\":\"Question 1\",\"answers\":[{\"id\":\"16541f93-8ede-476b-9ce5-730a22c103ea\",\"name\":\"Answer 1\"}]}]}")
                 );
     }
 
     @Test
     void shouldDeleteCategory() throws Exception {
-        mockMvc.perform(delete("http://localhost:8080/api/v1/categories/{categoryId}", category.getId()))
+        mockMvc.perform(delete("http://localhost:8080/api/v1/categories/{categoryId}", CATEGORY_UUID))
                 .andExpect(status().isNoContent());
     }
 
@@ -144,7 +149,7 @@ class CategoryApiControllerTest {
     void shouldThrowExceptionWhenTryDeleteCategory() throws Exception {
         willThrow(new IllegalStateException("Some error message")).given(categoryService).deleteCategory(any());
 
-        mockMvc.perform(delete("http://localhost:8080/api/v1/categories/{categoryId}", category.getId()))
+        mockMvc.perform(delete("http://localhost:8080/api/v1/categories/{categoryId}", CATEGORY_UUID))
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().json("{\"errors\":\"Error: 500 INTERNAL_SERVER_ERROR\"}"));
     }
@@ -154,5 +159,14 @@ class CategoryApiControllerTest {
                 .id(category.getId())
                 .name(category.getName())
                 .build();
+    }
+
+    private static Category prepareCategoryWithQuestionAndAnswer() {
+        Category category1 = new Category(CATEGORY_UUID, "Cat1");
+        Question question1 = new Question(UUID.fromString("a07208ec-69c1-42dc-ab62-ba0aaf85c516"), "Question 1");
+        question1.setCategory(category1);
+        question1.setAnswers(Set.of(new Answer(UUID.fromString("16541f93-8ede-476b-9ce5-730a22c103ea"), "Answer 1")));
+        category1.setQuestions(List.of(question1));
+        return category1;
     }
 }

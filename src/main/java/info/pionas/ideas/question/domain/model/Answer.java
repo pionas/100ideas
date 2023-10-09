@@ -5,6 +5,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -15,6 +16,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @ToString
+@NoArgsConstructor
 public class Answer {
 
     @Id
@@ -25,12 +27,8 @@ public class Answer {
     @ManyToOne
     private Question question;
 
-    public Answer() {
-        this.id = UUID.randomUUID();
-    }
-
-    public Answer(String name) {
-        this();
+    public Answer(UUID id, String name) {
+        this.id = id;
         this.name = name;
     }
 }
