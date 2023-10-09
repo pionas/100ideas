@@ -42,8 +42,8 @@ jobs:
           token: ${{ secrets.TOKEN }}
       - name: Read Application Config
         run: |
-          echo "APP_NAME=$(yq eval '.info.app.name' ./src/main/resources/application.properties)" >> $GITHUB_ENV
-          echo "APP_VERSION=$(yq eval '.info.app.version' ./src/main/resources/application.properties)" >> $GITHUB_ENV
+          echo "APP_NAME=$(yq eval '.info.app.name' ./src/main/resources/application.yaml)" >> $GITHUB_ENV
+          echo "APP_VERSION=$(yq eval '.info.app.version' ./src/main/resources/application.yaml)" >> $GITHUB_ENV
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.11.0
         with:
@@ -72,7 +72,7 @@ jobs:
           name: artifact
           path: |
             target/ideas-${{ env.APP_VERSION }}.jar
-            src/main/resources/application.properties
+            src/main/resources/application.yaml
   deploy:
     if: ${{ github.event_name == 'push' }}
     needs: generate-jar
@@ -85,8 +85,8 @@ jobs:
           access_token: ${{ secrets.TOKEN }}
       - name: Read Application Config
         run: |
-          echo "APP_NAME=$(yq eval '.info.app.name' ./src/main/resources/application.properties)" >> $GITHUB_ENV
-          echo "APP_VERSION=$(yq eval '.info.app.version' ./src/main/resources/application.properties)" >> $GITHUB_ENV
+          echo "APP_NAME=$(yq eval '.info.app.name' ./src/main/resources/application.yaml)" >> $GITHUB_ENV
+          echo "APP_VERSION=$(yq eval '.info.app.version' ./src/main/resources/application.yaml)" >> $GITHUB_ENV
       - name: Download JAR
         uses: actions/download-artifact@v3
         with:
