@@ -3,6 +3,8 @@ package info.pionas.ideas.category.service;
 import info.pionas.ideas.category.domain.model.Category;
 import info.pionas.ideas.category.domain.repository.CategoryRepository;
 import info.pionas.ideas.category.dto.CategoryWithStatisticsDto;
+import info.pionas.ideas.common.uuid.UuidUtils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,13 +14,12 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final UuidUtils uuidUtils;
 
-    public CategoryService(CategoryRepository categoryRepository) {
-        this.categoryRepository = categoryRepository;
-    }
 
     @Transactional(readOnly = true)
     public Page<Category> getCategories(Pageable pageable) {
@@ -42,7 +43,7 @@ public class CategoryService {
     @Transactional
     public Category createCategory(Category categoryRequest) {
         Category category = new Category();
-
+        category.setId(uuidUtils.generate());
         category.setName(categoryRequest.getName());
 
         return categoryRepository.save(category);

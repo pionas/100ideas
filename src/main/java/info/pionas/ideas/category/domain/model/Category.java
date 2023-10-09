@@ -8,6 +8,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.UUID;
 @Table(name = "categories")
 @Getter
 @Setter
+@NoArgsConstructor
 public class Category {
 
     @Id
@@ -29,12 +31,8 @@ public class Category {
     @OneToMany(mappedBy = "category")
     private List<Question> questions;
 
-    public Category() {
-        this.id = UUID.randomUUID();
-    }
-
-    public Category(String name) {
-        this.id = UUID.randomUUID();
+    public Category(UUID id, String name) {
+        this.id = id;
         this.name = name;
     }
 }

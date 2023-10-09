@@ -19,10 +19,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -45,9 +45,11 @@ class CategoryApiControllerTest {
 
     @BeforeEach
     void setUp() {
-        category = new Category("Cat1");
+        category = new Category(UUID.fromString("cbb9f3e8-22bf-4e80-8ada-3cef67911ad4"), "Cat1");
+        Category category2 = new Category(UUID.fromString("f675468d-8cf9-48d6-8a15-27efa1359407"), "Cat2");
+        Category category3 = new Category(UUID.fromString("ed3335df-5754-4038-a026-d39ce0cf2ebd"), "Cat3");
         page = new PageImpl<>(
-                List.of(category, new Category("Cat2"), new Category("Cat3"))
+                List.of(category, category2, category3)
         );
         when(categoryService.getCategories(any())).thenReturn(page);
         when(categoryService.getCategory(category.getId())).thenReturn(category);

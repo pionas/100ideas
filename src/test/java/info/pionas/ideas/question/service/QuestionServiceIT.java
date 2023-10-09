@@ -116,13 +116,14 @@ class QuestionServiceIT {
         Throwable throwable = catchThrowable(() -> questionService.deleteQuestion(id));
 
         // then
+        assertThat(throwable).isNotNull();
         assertThat(questionRepository.findById(question.getId())).isEmpty();
     }
 
     @Test
     void shouldFindAllByCategoryId() {
         // given
-        Category category = new Category("Category1");
+        Category category = new Category(UUID.fromString("cbb9f3e8-22bf-4e80-8ada-3cef67911ad4"), "Category1");
         categoryRepository.save(category);
 
         Question question1 = new Question("Question1");
