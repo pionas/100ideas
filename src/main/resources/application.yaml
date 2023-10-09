@@ -1,0 +1,32 @@
+info:
+  app:
+    name: 100 Ideas application
+    version: 1.0.0
+    description: 100 Ideas is a website when you can find interesting events in your neighborhood
+spring:
+  datasource:
+    driverClassName: org.h2.Driver
+    password: password
+    username: sa
+    url: jdbc:h2:mem:testdb
+  liquibase:
+    change-log: classpath:/db/changelog/db.changelog-master.yaml
+    enabled: 'true'
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: 'true'
+    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        format_sql: 'true'
+  jackson:
+    default-property-inclusion: non_null
+logging:
+  level:
+    org:
+      springframework:
+        web:
+          servlet: error
+ideas:
+  name: ${info.app.name}
