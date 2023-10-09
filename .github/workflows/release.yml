@@ -1,0 +1,123 @@
+name: "Release"
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    if: ${{ github.event_name == 'pull_request' || github.event_name == 'push' }}
+    name: Tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ secrets.TOKEN }}
+      - uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'corretto'
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Test with Gradle
+        run: ./gradlew test
+
+  generate-jar:
+    if: ${{ github.event_name == 'push' }}
+    needs: build-and-test
+    name: Generate Jar
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.TOKEN }}
+      - name: Read Application Config
+        run: |
+          echo "APP_NAME=$(yq eval '.info.app.name' ./src/main/resources/application.properties)" >> $GITHUB_ENV
+          echo "APP_VERSION=$(yq eval '.info.app.version' ./src/main/resources/application.properties)" >> $GITHUB_ENV
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ secrets.TOKEN }}
+      - name: Create tag
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.TOKEN }}
+          script: |
+            github.rest.git.createRef({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              sha: context.sha,
+              ref: "refs/tags/${{ env.APP_VERSION }}",
+            })
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: '17'
+      - name: Build PROD with Maven
+        run: mvn clean package
+      - name: Upload JAR
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifact
+          path: |
+            target/100ideas-${{ env.APP_VERSION }}.jar
+            src/main/resources/application.properties
+  deploy:
+    if: ${{ github.event_name == 'push' }}
+    needs: generate-jar
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.11.0
+        with:
+          access_token: ${{ secrets.TOKEN }}
+      - name: Read Application Config
+        run: |
+          echo "APP_NAME=$(yq eval '.info.app.name' ./src/main/resources/application.properties)" >> $GITHUB_ENV
+          echo "APP_VERSION=$(yq eval '.info.app.version' ./src/main/resources/application.properties)" >> $GITHUB_ENV
+      - name: Download JAR
+        uses: actions/download-artifact@v3
+        with:
+          name: artifact
+      - name: Deploy file via ssh password
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          source: "100ideas-${{ env.APP_VERSION }}.jar"
+          target: www/100ideas
+      - name: run app
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.SSH_IP }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: kill -9 $(pgrep -f '100ideas') & screen -d -m -S 100ideas java -jar ./www/100ideas/100ideas-${{ env.APP_VERSION }}.jar --server.port=${{ secrets.APP_PORT }}
+
+  remove-artifact:
+    if: ${{ github.event_name == 'push' }}
+    needs: deploy
+    name: Remove local artifact
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove local artifact
+        uses: geekyeggo/delete-artifact@v2
+        with:
+          name: artifact
