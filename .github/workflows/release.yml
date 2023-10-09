@@ -66,7 +66,7 @@ jobs:
           java-version: '17'
       - name: Build PROD with Maven
         run: mvn clean package
-      - name: Upload JAR
+      - name: Upload package
         uses: actions/upload-artifact@v3
         with:
           name: artifact
@@ -83,14 +83,15 @@ jobs:
         uses: styfle/cancel-workflow-action@0.11.0
         with:
           access_token: ${{ secrets.TOKEN }}
-      - name: Read Application Config
-        run: |
-          echo "APP_NAME=$(yq eval '.info.app.name' ./src/main/resources/application.yaml)" >> $GITHUB_ENV
-          echo "APP_VERSION=$(yq eval '.info.app.version' ./src/main/resources/application.yaml)" >> $GITHUB_ENV
-      - name: Download JAR
+      - name: Download package
         uses: actions/download-artifact@v3
         with:
           name: artifact
+      - name: Read Application Config
+        run: |
+          echo "APP_VERSION=$(yq eval '.info.app.version' ./src/main/resources/application.yaml)" >> $GITHUB_ENV
+      - name: Copy jar file to project root dir
+        run: cp ./target/ideas-${{ env.APP_VERSION }}.jar ./ideas-${{ env.APP_VERSION }}.jar
       - name: Deploy file via ssh password
         uses: appleboy/scp-action@v0.1.4
         with:
