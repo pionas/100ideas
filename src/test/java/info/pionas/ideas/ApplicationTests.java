@@ -13,7 +13,7 @@ class ApplicationTests {
 
     @Test
     void contextLoads() {
-        Assertions.assertEquals("0.0.1-SNAPSHOT", appVersion);
+        Assertions.assertEquals("1.0.0", appVersion);
     }
 
 }

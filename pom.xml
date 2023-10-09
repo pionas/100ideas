@@ -10,7 +10,7 @@
     </parent>
     <groupId>info.pionas</groupId>
     <artifactId>ideas</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>100ideas</name>
     <description>100ideas</description>
 
